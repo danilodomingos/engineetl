@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineETL.Core.Domain.Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineETL.Infrastructure.Data", "EngineETL.Infrastructure.Data\EngineETL.Infrastructure.Data.csproj", "{97CF85DF-7BAD-4E20-BEAD-507F279CF1B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineETL.Tools", "EngineETL.Tools\EngineETL.Tools.csproj", "{0A078692-1222-43BC-98F4-7888342FB65B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{97CF85DF-7BAD-4E20-BEAD-507F279CF1B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97CF85DF-7BAD-4E20-BEAD-507F279CF1B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97CF85DF-7BAD-4E20-BEAD-507F279CF1B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A078692-1222-43BC-98F4-7888342FB65B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A078692-1222-43BC-98F4-7888342FB65B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A078692-1222-43BC-98F4-7888342FB65B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A078692-1222-43BC-98F4-7888342FB65B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{4A713B00-6332-4DAA-8070-E6BA12247874} = {416DA33A-59DE-46E7-8285-4868FB5016E4}
 		{C01D40E0-79EB-4E2D-8395-5DBDD64B8DA6} = {416DA33A-59DE-46E7-8285-4868FB5016E4}
 		{97CF85DF-7BAD-4E20-BEAD-507F279CF1B0} = {802432A9-29AB-4CFB-801E-E77543350AC7}
+		{0A078692-1222-43BC-98F4-7888342FB65B} = {B2A79310-C7FF-4ECA-8741-EC16E6043D02}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4300C923-1EC0-46EB-92B4-CA1B7A353FFB}
