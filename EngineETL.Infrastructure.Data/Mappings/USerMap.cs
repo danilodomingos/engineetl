@@ -1,6 +1,7 @@
 ﻿using EngineETL.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace EngineETL.Infrastructure.Data.Mappings
 {
@@ -23,6 +24,7 @@ namespace EngineETL.Infrastructure.Data.Mappings
             builder.HasMany(x => x.ExpectedFormats).WithOne(x => x.User);
 
             #endregion
+
 
         }
     }

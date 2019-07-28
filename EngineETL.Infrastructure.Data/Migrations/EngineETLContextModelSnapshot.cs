@@ -54,6 +54,44 @@ namespace EngineETL.Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Template");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f342789f-8376-45c0-34ad-08d71388325b"),
+                            CityPropertyHabitants = "cidade.populacao",
+                            CityPropertyName = "cidade.nome",
+                            Name = "# Exemplo 1 - Template Estado Rio de Janeiro",
+                            NeighborhoodPropertyHabitants = "bairro.populacao",
+                            NeighborhoodPropertyName = "bairro.nome",
+                            PropertyCity = "corpo.cidade",
+                            PropertyNeighborhood = "cidades.bairros.bairro",
+                            UserId = new Guid("04cc9f3e-7014-4bda-9af6-08d713670934")
+                        },
+                        new
+                        {
+                            Id = new Guid("5019b3d0-aa57-440c-b9cc-08d7138a0915"),
+                            CityPropertyHabitants = "city.population",
+                            CityPropertyName = "city.name",
+                            Name = "# Exemplo 2 - Template Estado Minas Gerais",
+                            NeighborhoodPropertyHabitants = "neighborhood.population",
+                            NeighborhoodPropertyName = "neighborhood.name",
+                            PropertyCity = "body.region.cities.city",
+                            PropertyNeighborhood = "city.neighborhoods.neighborhood",
+                            UserId = new Guid("04cc9f3e-7014-4bda-9af6-08d713670934")
+                        },
+                        new
+                        {
+                            Id = new Guid("73896430-392a-4d76-b9cd-08d7138a0915"),
+                            CityPropertyHabitants = "cities.population",
+                            CityPropertyName = "cities.name",
+                            Name = "# Exemplo 3 - Template Estado do Acre",
+                            NeighborhoodPropertyHabitants = "neighborhoods.population",
+                            NeighborhoodPropertyName = "neighborhoods.name",
+                            PropertyCity = "cities",
+                            PropertyNeighborhood = "cities.neighborhoods",
+                            UserId = new Guid("04cc9f3e-7014-4bda-9af6-08d713670934")
+                        });
                 });
 
             modelBuilder.Entity("EngineETL.Core.Domain.Entities.User", b =>
@@ -72,6 +110,15 @@ namespace EngineETL.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("04cc9f3e-7014-4bda-9af6-08d713670934"),
+                            LastAccess = new DateTime(2019, 7, 28, 18, 36, 31, 430, DateTimeKind.Local).AddTicks(9002),
+                            Login = "usrteste@gmail.com",
+                            Password = "1234"
+                        });
                 });
 
             modelBuilder.Entity("EngineETL.Core.Domain.Entities.Template", b =>

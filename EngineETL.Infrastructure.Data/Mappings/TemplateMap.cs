@@ -1,6 +1,7 @@
 ﻿using EngineETL.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace EngineETL.Infrastructure.Data.Mappings
 {
