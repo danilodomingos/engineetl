@@ -3,9 +3,8 @@ using System;
 
 namespace EngineETL.Core.Domain.Entities
 {
-    public class ExpectedFormat
+    public class ExpectedFormat : BaseEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public string PropertyCity { get; set; }

@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using EngineETL.Core.Domain.DTO;
+using EngineETL.Core.Domain.Interfaces.Service;
+using EngineETL.Tools.Parsers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
@@ -15,26 +19,35 @@ namespace EngineETL.API.Controllers
     [ApiController]
     public class TemplateController : ControllerBase
     {
+
+        private readonly IExpectedFormatService service;
+
+        public TemplateController(IExpectedFormatService service)
+        {
+            this.service = service;
+        }
+
         [HttpPost]
         [Consumes("application/xml", "application/json")]
         public IList<CityDTO> SaveFormat([FromBody]object data)
         {
 
-            //var xmlString = data.ToString();
-            //XDocument doc = XDocument.Parse(xmlString);
+            this.service.GetById(Guid.NewGuid());
+            var xmlString = data.ToString();
+            XDocument doc = XDocument.Parse(xmlString);
 
-            //ExpandoObject root = new ExpandoObject();
-            //XmlToDynamic.Parse(root, doc.Elements().First());
+            ExpandoObject root = new ExpandoObject();
+            XmlToDynamic.Parse(root, doc.Elements().First());
 
-            //var expectedFormat = new ExpectedFormatDTO()
-            //{
-            //    CampoCidade = "corpo.cidade", // sempre informar o pai
-            //    CidadeCampoNome = "cidade.nome",
-            //    CidadeCampoHabitantes = "cidade.populacao",
-            //    CampoBairro = "cidade.bairros.bairro",
-            //    BairroCampoNome = "bairro.nome",
-            //    BairroCampoHabitantes = "bairro.populacao"
-            //};
+            var expectedFormat = new ExpectedFormatDTO()
+            {
+                CampoCidade = "corpo.cidade", // sempre informar o pai
+                CidadeCampoNome = "cidade.nome",
+                CidadeCampoHabitantes = "cidade.populacao",
+                CampoBairro = "cidade.bairros.bairro",
+                BairroCampoNome = "bairro.nome",
+                BairroCampoHabitantes = "bairro.populacao"
+            };
 
             //var expectedFormat = new ExpectedFormatDTO()
             //{
@@ -56,15 +69,15 @@ namespace EngineETL.API.Controllers
             //    BairroCampoHabitantes = "bairro.populacao"
             //};
 
-            var expectedFormat = new ExpectedFormatDTO()
-            {
-                CampoCidade = "cities", // sempre informar o pai
-                CidadeCampoNome = "cities.name",
-                CidadeCampoHabitantes = "cities.population",
-                CampoBairro = "cities.neighborhoods",
-                BairroCampoNome = "neighborhoods.name",
-                BairroCampoHabitantes = "neighborhoods.population"
-            };
+            //var expectedFormat = new ExpectedFormatDTO()
+            //{
+            //    CampoCidade = "cities", // sempre informar o pai
+            //    CidadeCampoNome = "cities.name",
+            //    CidadeCampoHabitantes = "cities.population",
+            //    CampoBairro = "cities.neighborhoods",
+            //    BairroCampoNome = "neighborhoods.name",
+            //    BairroCampoHabitantes = "neighborhoods.population"
+            //};
 
             var mapJsonResultProperties = new Dictionary<string, string>() {
                 { expectedFormat.CidadeCampoNome,"City"  },
@@ -74,13 +87,10 @@ namespace EngineETL.API.Controllers
                 { expectedFormat.BairroCampoHabitantes, "Habitants"}
             };
 
-            //var _object = root as IDictionary<string, object>;
-
             var json = JsonConvert.SerializeObject(data, Formatting.Indented);
             JObject parsedObject = JObject.Parse(json);
 
-            var result = parsedObject.Descendants()
-                .OfType<JProperty>()
+            var result = parsedObject.Descendants().OfType<JProperty>()
                 .Select(p => new KeyValuePair<string, object>(p.Path, p.Value.Type == JTokenType.Array || p.Value.Type == JTokenType.Object ? null : p.Value));
 
             List<object> listObjects = GroupObjectProperties(expectedFormat.CampoCidade, result);

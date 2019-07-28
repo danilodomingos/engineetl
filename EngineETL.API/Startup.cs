@@ -1,7 +1,13 @@
-﻿using EngineETL.Tools.Formatters;
+﻿using EngineETL.Core.Domain.Interfaces.Repository;
+using EngineETL.Core.Domain.Interfaces.Service;
+using EngineETL.Core.Domain.Services;
+using EngineETL.Infrastructure.Data.Context;
+using EngineETL.Infrastructure.Data.Repository;
+using EngineETL.Tools.Formatters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
@@ -17,7 +23,6 @@ namespace EngineETL.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc(options => {
@@ -26,13 +31,18 @@ namespace EngineETL.API
             .AddXmlSerializerFormatters()
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Engine ETL" });
-            });
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "Engine ETL" }));
+
+            services.AddDbContext<EngineETLContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("context")).EnableSensitiveDataLogging());
+
+
+            services.AddScoped<IExpectedFormatRepository, ExpectedFormatRepository>();
+            services.AddScoped<IExpectedFormatService, ExpectedFormatService>();
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -41,7 +51,6 @@ namespace EngineETL.API
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

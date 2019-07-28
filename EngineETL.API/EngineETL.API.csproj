@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EngineETL.Core.Domain\EngineETL.Core.Domain.csproj" />
+    <ProjectReference Include="..\EngineETL.Infrastructure.Data\EngineETL.Infrastructure.Data.csproj" />
     <ProjectReference Include="..\EngineETL.Tools\EngineETL.Tools.csproj" />
   </ItemGroup>
 
