@@ -7,5 +7,6 @@ namespace EngineETL.Core.Domain.Interfaces.Service
     public interface ITemplateService : IBaseService<Template>
     {
         TemplateDTO Insert(InsertTemplateDTO templateDTO, Guid userId);
+        TemplateDTO GetById(Guid id);
     }
 }

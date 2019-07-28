@@ -66,22 +66,12 @@ namespace EngineETL.Core.Domain.Services
 
         public UserDTO Insert(InsertUserDTO userDTO)
         {
-            var user = new User()
-            {
-                LastAccess = DateTime.Now,
-                Login = userDTO.Login,
-                Password = userDTO.Password
-            };
+            var user = new User() { LastAccess = DateTime.Now, Login = userDTO.Login, Password = userDTO.Password};
 
             repository.Insert(user);
             repository.SaveChanges();
 
-            var insertedDTO = new UserDTO()
-            {
-                Id = user.Id.ToString(),
-                LastAccess = user.LastAccess,
-                Login = user.Login
-            };
+            var insertedDTO = new UserDTO() { Id = user.Id.ToString(), LastAccess = user.LastAccess, Login = user.Login};
 
             return insertedDTO;
         }

@@ -31,11 +31,46 @@ namespace EngineETL.Core.Domain.Services
                 PropertyNeighborhood = dto.PropertyNeighborhood,
                 NeighborhoodPropertyHabitants = dto.NeighborhoodPropertyHabitants,
                 NeighborhoodPropertyName = dto.NeighborhoodPropertyName,
-               
+                User = user
             };
 
-            return null;
+            repository.Insert(template);
+            repository.SaveChanges();
 
+            var templateDto = new TemplateDTO()
+            {
+                Id = template.Id.ToString(),
+                Name = dto.Name,
+                PropertyCity = dto.PropertyCity,
+                CityPropertyName = dto.CityPropertyName,
+                CityPropertyHabitants = dto.CityPropertyHabitants,
+                PropertyNeighborhood = dto.PropertyNeighborhood,
+                NeighborhoodPropertyHabitants = dto.NeighborhoodPropertyHabitants,
+                NeighborhoodPropertyName = dto.NeighborhoodPropertyName,
+            };
+
+            return templateDto;
+        }
+
+        public TemplateDTO GetById(Guid id)
+        {
+            TemplateDTO dto = null;
+
+            var template = repository.GetById(id);
+
+            if(template != null)
+            {
+                dto = new TemplateDTO() {
+                    PropertyCity = template.PropertyCity,
+                    CityPropertyName = template.CityPropertyName,
+                    CityPropertyHabitants = template.CityPropertyHabitants,
+                    PropertyNeighborhood = template.PropertyNeighborhood,
+                    NeighborhoodPropertyName = template.NeighborhoodPropertyName,
+                    NeighborhoodPropertyHabitants = template.NeighborhoodPropertyHabitants
+                };
+            }
+
+            return dto;
         }
     }
 }

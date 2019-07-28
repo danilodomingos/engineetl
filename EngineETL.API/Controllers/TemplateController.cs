@@ -39,70 +39,32 @@ namespace EngineETL.API.Controllers
 
         [HttpPost]
         [Route("SaveTemplate/{userId}")]
+        [Consumes("application/json")]
         public TemplateDTO SaveTemplate([FromBody] InsertTemplateDTO templateDTO, [FromRoute] Guid userId)
         {
             return service.Insert(templateDTO, userId);
         }
 
 
-
-
         [HttpPost]
+        [Route("ConvertMessage/{templateId}")]
         [Consumes("application/xml", "application/json")]
-        public IList<CityDTO> SaveFormat([FromBody]object data)
+        public IList<CityDTO> ConvertMessage([FromBody]object data, [FromRoute] Guid templateId)
         {
-            var xmlString = data.ToString();
-            XDocument doc = XDocument.Parse(xmlString);
+            var expectedFormat = service.GetById(templateId);
+            //var xmlString = data.ToString();
+            //XDocument doc = XDocument.Parse(xmlString);
 
-            ExpandoObject root = new ExpandoObject();
-            XmlToDynamic.Parse(root, doc.Elements().First());
+            //ExpandoObject root = new ExpandoObject();
+            //XmlToDynamic.Parse(root, doc.Elements().First());
 
-            var expectedFormat = new ExpectedFormatDTO()
-            {
-                CampoCidade = "corpo.cidade", // sempre informar o pai
-                CidadeCampoNome = "cidade.nome",
-                CidadeCampoHabitantes = "cidade.populacao",
-                CampoBairro = "cidade.bairros.bairro",
-                BairroCampoNome = "bairro.nome",
-                BairroCampoHabitantes = "bairro.populacao"
-            };
-
-            //var expectedFormat = new ExpectedFormatDTO()
-            //{
-            //    CampoCidade = "body.region.cities.city", // sempre informar o pai
-            //    CidadeCampoNome = "city.name",
-            //    CidadeCampoHabitantes = "city.population",
-            //    CampoBairro = "city.neighborhoods.neighborhood",
-            //    BairroCampoNome = "neighborhood.name",
-            //    BairroCampoHabitantes = "neighborhood.population"
-            //};
-
-            //var expectedFormat = new ExpectedFormatDTO()
-            //{
-            //    CampoCidade = "lugar.cidade", // sempre informar o pai
-            //    CidadeCampoNome = "cidade.nome",
-            //    CidadeCampoHabitantes = "lugar.habitantes_cidades",
-            //    CampoBairro = "lugar.bairros.bairro",
-            //    BairroCampoNome = "bairro.nome",
-            //    BairroCampoHabitantes = "bairro.populacao"
-            //};
-
-            //var expectedFormat = new ExpectedFormatDTO()
-            //{
-            //    CampoCidade = "cities", // sempre informar o pai
-            //    CidadeCampoNome = "cities.name",
-            //    CidadeCampoHabitantes = "cities.population",
-            //    CampoBairro = "cities.neighborhoods",
-            //    BairroCampoNome = "neighborhoods.name",
-            //    BairroCampoHabitantes = "neighborhoods.population"
-            //};
 
             var mapJsonResultProperties = new Dictionary<string, string>() {
-                { expectedFormat.CidadeCampoNome,"City"  },
-                { expectedFormat.CidadeCampoHabitantes,"Habitants"},
-                { expectedFormat.CampoBairro,"Neighborhoods"},
-                { expectedFormat.BairroCampoNome, "Name"  },
-                { expectedFormat.BairroCampoHabitantes, "Habitants"}
+                { expectedFormat.CityPropertyName,"City"  },
+                { expectedFormat.CityPropertyHabitants,"Habitants"},
+                { expectedFormat.PropertyNeighborhood,"Neighborhoods"},
+                { expectedFormat.NeighborhoodPropertyName, "Name"  },
+                { expectedFormat.NeighborhoodPropertyHabitants, "Habitants"}
             };
 
             var json = JsonConvert.SerializeObject(data, Formatting.Indented);
@@ -111,14 +73,14 @@ namespace EngineETL.API.Controllers
             var result = parsedObject.Descendants().OfType<JProperty>()
                 .Select(p => new KeyValuePair<string, object>(p.Path, p.Value.Type == JTokenType.Array || p.Value.Type == JTokenType.Object ? null : p.Value));
 
-            List<object> listObjects = GroupObjectProperties(expectedFormat.CampoCidade, result);
+            List<object> listObjects = GroupObjectProperties(expectedFormat.PropertyCity, result);
             IList<CityDTO> _result = FillCities(expectedFormat, mapJsonResultProperties, listObjects);
 
             return _result;
 
         }
 
-        private IList<CityDTO> FillCities(ExpectedFormatDTO expectedFormat, Dictionary<string, string> mapJsonResultProperties, List<object> listObjects)
+        private IList<CityDTO> FillCities(TemplateDTO expectedFormat, Dictionary<string, string> mapJsonResultProperties, List<object> listObjects)
         {
             var cities = new List<CityDTO>();
 
@@ -127,10 +89,10 @@ namespace EngineETL.API.Controllers
                 var expectedProperties = (IDictionary<string, object>)TakeExpectedProperties(properties, mapJsonResultProperties);
 
                 var dto = new CityDTO();
-                dto.City = expectedProperties.FirstOrDefault(x => x.Key == expectedFormat.CidadeCampoNome).Value?.ToString(); // TO-DO: Tratar esses castings
-                dto.Habitants = int.Parse(expectedProperties.FirstOrDefault(x => x.Key == expectedFormat.CidadeCampoHabitantes).Value?.ToString()); // TO-DO: Tratar esses castings
+                dto.City = expectedProperties.FirstOrDefault(x => x.Key == expectedFormat.CityPropertyName).Value?.ToString(); // TO-DO: Tratar esses castings
+                dto.Habitants = int.Parse(expectedProperties.FirstOrDefault(x => x.Key == expectedFormat.CityPropertyHabitants).Value?.ToString()); // TO-DO: Tratar esses castings
 
-                var neighborhoods = expectedProperties.Where(x => x.Key != expectedFormat.CidadeCampoNome && x.Key != expectedFormat.CidadeCampoHabitantes);
+                var neighborhoods = expectedProperties.Where(x => x.Key != expectedFormat.CityPropertyName && x.Key != expectedFormat.CityPropertyHabitants);
                 dto.Neighborhoods = FillNeighborhoods(neighborhoods, expectedFormat, mapJsonResultProperties);
 
                 cities.Add(dto);
@@ -139,16 +101,16 @@ namespace EngineETL.API.Controllers
             return cities;
         }
 
-        private ICollection<NeighborhoodDTO> FillNeighborhoods(IEnumerable<KeyValuePair<string, object>> neighborhoods, ExpectedFormatDTO expectedFormat, Dictionary<string, string> mapJsonResultProperties)
+        private ICollection<NeighborhoodDTO> FillNeighborhoods(IEnumerable<KeyValuePair<string, object>> neighborhoods, TemplateDTO expectedFormat, Dictionary<string, string> mapJsonResultProperties)
         {
-            var objList = GroupObjectProperties(expectedFormat.BairroCampoNome, neighborhoods);
+            var objList = GroupObjectProperties(expectedFormat.NeighborhoodPropertyName, neighborhoods);
             var list = new List<NeighborhoodDTO>();
 
             foreach (IDictionary<string, object> properties in objList)
             {
                 var dto = new NeighborhoodDTO();
-                dto.Name = properties[expectedFormat.BairroCampoNome]?.ToString();
-                dto.Habitants = int.Parse(properties[expectedFormat.BairroCampoHabitantes]?.ToString());
+                dto.Name = properties[expectedFormat.NeighborhoodPropertyName]?.ToString();
+                dto.Habitants = int.Parse(properties[expectedFormat.NeighborhoodPropertyHabitants]?.ToString());
                 list.Add(dto);
             }
             return list;
