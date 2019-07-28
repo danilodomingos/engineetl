@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using EngineETL.Core.Domain.DTO;
 using EngineETL.Core.Domain.Interfaces.Service;
-using EngineETL.Tools.Parsers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -49,15 +47,10 @@ namespace EngineETL.API.Controllers
         [HttpPost]
         [Route("ConvertMessage/{templateId}")]
         [Consumes("application/xml", "application/json")]
+        [Produces("application/json")]
         public IList<CityDTO> ConvertMessage([FromBody]object data, [FromRoute] Guid templateId)
         {
             var expectedFormat = service.GetById(templateId);
-            //var xmlString = data.ToString();
-            //XDocument doc = XDocument.Parse(xmlString);
-
-            //ExpandoObject root = new ExpandoObject();
-            //XmlToDynamic.Parse(root, doc.Elements().First());
-
 
             var mapJsonResultProperties = new Dictionary<string, string>() {
                 { expectedFormat.CityPropertyName,"City"  },
