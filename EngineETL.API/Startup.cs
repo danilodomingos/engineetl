@@ -37,8 +37,16 @@ namespace EngineETL.API
                 options.UseSqlServer(Configuration.GetConnectionString("context")).EnableSensitiveDataLogging());
 
 
-            services.AddScoped<IExpectedFormatRepository, ExpectedFormatRepository>();
-            services.AddScoped<IExpectedFormatService, ExpectedFormatService>();
+            #region Repository
+                services.AddScoped<IExpectedFormatRepository, ExpectedFormatRepository>();
+                services.AddScoped<IUserRepository, UserRepository>();
+            #endregion
+
+            #region Services
+                services.AddScoped<IExpectedFormatService, ExpectedFormatService>();
+                services.AddScoped<IUserService, UserService>();
+            #endregion
+
 
         }
 

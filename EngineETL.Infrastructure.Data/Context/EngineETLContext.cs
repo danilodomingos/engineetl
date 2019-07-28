@@ -25,7 +25,8 @@ namespace EngineETL.Infrastructure.Data.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfiguration(new ExpectedFormatMap());            
+            builder.ApplyConfiguration(new ExpectedFormatMap());
+            builder.ApplyConfiguration(new UserMap());
             base.OnModelCreating(builder);
         }
 
