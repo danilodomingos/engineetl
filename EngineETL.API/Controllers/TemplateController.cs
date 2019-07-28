@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using EngineETL.Core.Domain.DTO;
 using EngineETL.Core.Domain.Interfaces.Service;
 using EngineETL.Tools.Parsers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace EngineETL.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TemplateController : ControllerBase

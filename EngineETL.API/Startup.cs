@@ -6,6 +6,7 @@ using EngineETL.Infrastructure.Data.Context;
 using EngineETL.Infrastructure.Data.Repository;
 using EngineETL.Tools.Formatters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
 using System.Text;
 
 namespace EngineETL.API
@@ -61,9 +63,33 @@ namespace EngineETL.API
                 };
             });
 
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer ", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build());
+            });
+
             services.AddSingleton<TokenGenerator>();
 
-            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "Engine ETL" }));
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info { Title = "Engine ETL" });
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] { } }
+                });
+
+            });
+
+
 
             services.AddDbContext<EngineETLContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("context")).EnableSensitiveDataLogging());
@@ -95,12 +121,12 @@ namespace EngineETL.API
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Engine ETL");
-            });
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Engine ETL"));
+
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
+            
         }
     }
 
