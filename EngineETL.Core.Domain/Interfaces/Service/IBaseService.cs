@@ -9,5 +9,6 @@ namespace EngineETL.Core.Domain.Interfaces.Service
         void Update(TEntity entity);
         void Delete(TEntity entity);
         TEntity GetById(Guid id);
+        int SaveChanges();
     }
 }

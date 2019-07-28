@@ -15,6 +15,7 @@ namespace EngineETL.Core.Domain.Services
             this.repository = repository;
 
         }
+
         public void Delete(TEntity entity)
         {
             this.repository.Delete(entity);
@@ -28,6 +29,11 @@ namespace EngineETL.Core.Domain.Services
         public void Insert(TEntity entity)
         {
             this.repository.Insert(entity);
+        }
+
+        public int SaveChanges()
+        {
+            return this.repository.SaveChanges();
         }
 
         public void Update(TEntity entity)
