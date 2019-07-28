@@ -125,6 +125,7 @@ namespace EngineETL.API
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseCustomResponseMiddleware();
             app.UseMvc();
             
         }

@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EngineETL.Core.Domain.Common\EngineETL.Core.Domain.Common.csproj" />
     <ProjectReference Include="..\EngineETL.Core.Domain\EngineETL.Core.Domain.csproj" />
     <ProjectReference Include="..\EngineETL.Infrastructure.Data\EngineETL.Infrastructure.Data.csproj" />
     <ProjectReference Include="..\EngineETL.Tools\EngineETL.Tools.csproj" />
