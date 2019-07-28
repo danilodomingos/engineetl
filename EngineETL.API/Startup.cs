@@ -96,12 +96,12 @@ namespace EngineETL.API
 
 
             #region Repository
-                services.AddScoped<IExpectedFormatRepository, ExpectedFormatRepository>();
+                services.AddScoped<ITemplateRepository, TemplateRepository>();
                 services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
             #region Services
-                services.AddScoped<IExpectedFormatService, ExpectedFormatService>();
+                services.AddScoped<ITemplateService, TemplateService>();
                 services.AddScoped<IUserService, UserService>();
             #endregion
 

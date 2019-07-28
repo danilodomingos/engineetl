@@ -9,6 +9,6 @@ namespace EngineETL.Core.Domain.Entities
         public string Login { get; set; }
         public string Password { get; set; }
         public DateTime LastAccess { get; set; }
-        public ICollection<ExpectedFormat> ExpectedFormats { get; set; }
+        public ICollection<Template> ExpectedFormats { get; set; }
     }
 }

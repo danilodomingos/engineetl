@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EngineETL.Infrastructure.Data.Mappings
 {
-    public class ExpectedFormatMap : IEntityTypeConfiguration<ExpectedFormat>
+    public class TemplateMap : IEntityTypeConfiguration<Template>
     {
-        public void Configure(EntityTypeBuilder<ExpectedFormat> builder)
+        public void Configure(EntityTypeBuilder<Template> builder)
         {
-            builder.ToTable("ExpectedFormat");
+            builder.ToTable("Template");
 
             builder.HasKey(x => x.Id);
 
@@ -20,6 +20,15 @@ namespace EngineETL.Infrastructure.Data.Mappings
             builder.Property(x => x.PropertyNeighborhood).HasMaxLength(100);
             builder.Property(x => x.NeighborhoodPropertyName).HasMaxLength(100);
             builder.Property(x => x.NeighborhoodPropertyHabitants).HasMaxLength(100);
+
+
+            #region Relationships
+
+            builder.HasOne(x => x.User)
+                .WithMany(x => x.ExpectedFormats)
+               .HasForeignKey(x => x.UserId);
+
+            #endregion
         }
     }
 }

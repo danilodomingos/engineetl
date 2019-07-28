@@ -1,12 +1,10 @@
 ﻿
-using System;
-
-namespace EngineETL.Core.Domain.Entities
+namespace EngineETL.Core.Domain.DTO
 {
-    public class ExpectedFormat : BaseEntity
+    public class TemplateDTO
     {
+        public string Id { get; set; }
         public string Name { get; set; }
-
         public string PropertyCity { get; set; }
         public string CityPropertyName { get; set; }
         public string CityPropertyHabitants { get; set; }

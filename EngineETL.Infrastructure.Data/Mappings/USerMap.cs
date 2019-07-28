@@ -20,7 +20,8 @@ namespace EngineETL.Infrastructure.Data.Mappings
 
             #region Relationships
 
-            builder.HasMany(x => x.ExpectedFormats).WithOne();
+            builder.HasMany(x => x.ExpectedFormats)
+                .WithOne(x => x.User);
 
             #endregion
 

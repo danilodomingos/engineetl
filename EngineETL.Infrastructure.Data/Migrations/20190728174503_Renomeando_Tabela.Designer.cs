@@ -4,14 +4,16 @@ using EngineETL.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EngineETL.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(EngineETLContext))]
-    partial class EngineETLContextModelSnapshot : ModelSnapshot
+    [Migration("20190728174503_Renomeando_Tabela")]
+    partial class Renomeando_Tabela
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

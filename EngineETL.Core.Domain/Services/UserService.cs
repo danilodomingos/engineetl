@@ -3,6 +3,7 @@ using EngineETL.Core.Domain.Entities;
 using EngineETL.Core.Domain.Interfaces.Repository;
 using EngineETL.Core.Domain.Interfaces.Service;
 using System;
+using System.Linq;
 
 namespace EngineETL.Core.Domain.Services
 {
@@ -33,6 +34,34 @@ namespace EngineETL.Core.Domain.Services
 
             return dto;
             
+        }
+
+        public UserListTemplateDTO GetTemplates(Guid userId)
+        {
+            UserListTemplateDTO dto = null;
+
+            User user = repository.GetTemplates(userId);
+
+            if(user != null)
+            {
+                dto = new UserListTemplateDTO()
+                {
+                    Login = user.Login,
+                    Templates = user.ExpectedFormats?.Select(x => new TemplateDTO()
+                    {
+                        Id = x.Id.ToString(),
+                        Name = x.Name,
+                        PropertyCity = x.PropertyCity,
+                        CityPropertyHabitants = x.CityPropertyHabitants,
+                        CityPropertyName = x.CityPropertyName,
+                        PropertyNeighborhood = x.PropertyNeighborhood,
+                        NeighborhoodPropertyHabitants = x.NeighborhoodPropertyHabitants,
+                        NeighborhoodPropertyName = x.NeighborhoodPropertyName
+                    }).ToList()
+                };
+            }
+
+            return dto;
         }
 
         public UserDTO Insert(InsertUserDTO userDTO)

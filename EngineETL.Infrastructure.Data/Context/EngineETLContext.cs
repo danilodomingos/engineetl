@@ -25,12 +25,12 @@ namespace EngineETL.Infrastructure.Data.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfiguration(new ExpectedFormatMap());
+            builder.ApplyConfiguration(new TemplateMap());
             builder.ApplyConfiguration(new UserMap());
             base.OnModelCreating(builder);
         }
 
-        public DbSet<ExpectedFormat> ExpectedFormats { get; set; }
+        public DbSet<Template> Templates { get; set; }
 
     }
 }

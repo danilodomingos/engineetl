@@ -8,5 +8,6 @@ namespace EngineETL.Core.Domain.Interfaces.Repository
     public interface IUserRepository : IBaseRepository<User>
     {
         User GetByLogin(string login, string password);
+        User GetTemplates(Guid userId);
     }
 }

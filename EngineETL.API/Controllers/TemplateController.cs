@@ -21,19 +21,36 @@ namespace EngineETL.API.Controllers
     public class TemplateController : ControllerBase
     {
 
-        private readonly IExpectedFormatService service;
+        private readonly ITemplateService service;
+        private readonly IUserService userService;
 
-        public TemplateController(IExpectedFormatService service)
+        public TemplateController(ITemplateService service, IUserService userService)
         {
             this.service = service;
+            this.userService = userService;
         }
+
+        [HttpGet]
+        [Route("ListTemplates/{userId}")]
+        public UserListTemplateDTO ListTemplates([FromRoute] Guid userId)
+        {
+            return userService.GetTemplates(userId);
+        }
+
+        [HttpPost]
+        [Route("SaveTemplate/{userId}")]
+        public TemplateDTO SaveTemplate([FromBody] InsertTemplateDTO templateDTO, [FromRoute] Guid userId)
+        {
+            return service.Insert(templateDTO, userId);
+        }
+
+
+
 
         [HttpPost]
         [Consumes("application/xml", "application/json")]
         public IList<CityDTO> SaveFormat([FromBody]object data)
         {
-
-            this.service.GetById(Guid.NewGuid());
             var xmlString = data.ToString();
             XDocument doc = XDocument.Parse(xmlString);
 

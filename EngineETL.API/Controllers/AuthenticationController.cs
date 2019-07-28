@@ -32,6 +32,7 @@ namespace EngineETL.API.Controllers
             {
                 dto = new CredentialsDTO()
                 {
+                    UserId = user.Id.ToString(),
                     LastAccess = user.LastAccess,
                     Login = user.Login,
                     Token = tokenGenerator.Generate(Guid.Parse(user.Id))
