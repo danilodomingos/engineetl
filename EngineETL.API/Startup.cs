@@ -1,12 +1,24 @@
-﻿using EngineETL.Tools.Formatters;
+﻿using EngineETL.API.Model;
+using EngineETL.Core.Domain.Interfaces.Repository;
+using EngineETL.Core.Domain.Interfaces.Service;
+using EngineETL.Core.Domain.Services;
+using EngineETL.Infrastructure.Data.Context;
+using EngineETL.Infrastructure.Data.Repository;
+using EngineETL.Tools.Formatters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Engine.ETL.API
+namespace EngineETL.API
 {
     public class Startup
     {
@@ -17,7 +29,6 @@ namespace Engine.ETL.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc(options => {
@@ -26,13 +37,78 @@ namespace Engine.ETL.API
             .AddXmlSerializerFormatters()
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSwaggerGen(c =>
+            
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            
+            var appSettings = appSettingsSection.Get<AppSettings>();
+
+            var key = Encoding.ASCII.GetBytes(appSettings.SecretKey);
+            services.AddAuthentication(x =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Engine ETL" });
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
             });
+
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer ", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build());
+            });
+
+            services.AddSingleton<TokenGenerator>();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info { Title = "Engine ETL" });
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] { } }
+                });
+
+            });
+
+
+
+            services.AddDbContext<EngineETLContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("context")).EnableSensitiveDataLogging());
+
+
+            #region Repository
+                services.AddScoped<ITemplateRepository, TemplateRepository>();
+                services.AddScoped<IUserRepository, UserRepository>();
+            #endregion
+
+            #region Services
+                services.AddScoped<ITemplateService, TemplateService>();
+                services.AddScoped<IUserService, UserService>();
+            #endregion
+
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -41,17 +117,17 @@ namespace Engine.ETL.API
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Engine ETL");
-            });
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Engine ETL"));
+
             app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseCustomResponseMiddleware();
             app.UseMvc();
+            
         }
     }
 
